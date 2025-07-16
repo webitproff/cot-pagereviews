@@ -1,6 +1,9 @@
 # cot-pagereviews
 Page Reviews Plugin for adding reviews to articles
 ### ver alfa ###
+
+in `page.tpl`
+
 1
 ```
                     <!-- IF {PHP|cot_plugin_active('pagereviews')} -->
