@@ -77,6 +77,10 @@ $L['pagereviews_complaint_processed'] = 'Жалоба обработана.';
 $L['pagereviews_error_complaint_exists'] = 'Вы уже отправляли жалобу на этот отзыв.';
 $L['pagereviews_error_empty_complaint_text'] = 'Вы не указали текст жалобы.';
 $L['pagereviews_error_invalidreview'] = 'Некорректный отзыв.';
+$L['pagereviews_pageRatingValue'] = 'Рейтинг';
+$L['pagereviews_pageCountStarsTotalValue'] = 'Всего звезд';
+$L['pagereviews_pageCountReviewsTotalValue'] = 'Всего отзывов';
+$L['pagereviews_pageAverageRatingValue'] = 'Средний рейтинг';
 
 /**
  * Notifications
