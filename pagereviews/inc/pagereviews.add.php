@@ -70,6 +70,12 @@ if (!cot_error_found()) {
     $itemid = $db->lastInsertId();
 
     // Отправка уведомлений
+	$review_url = $cfg['mainurl'] . '/' . cot_url('plug', [
+		'e' => 'pagereviews',
+		'm' => 'main',
+		'itemid' => $itemid,
+		'pageid' => $ritem['item_pageid']
+	], '', true);
     $reviewer = $db->query("SELECT user_name FROM $db_users WHERE user_id = ?", [$ritem['item_userid']])->fetch();
     $reviewer_name = $reviewer['user_name'] ?: 'Неизвестный';
     $subject = $L['pagereviews_new_review'] . ": " . htmlspecialchars($ritem['item_title']);
@@ -81,6 +87,8 @@ if (!cot_error_found()) {
     $body .= $L['pagereviews_page'] . ": {$pageinfo['page_title']} (" . $cfg['mainurl'] . '/' . cot_url('page', $default_url_params, '', true) . ")\n";
     $body .= $L['pagereviews_date'] . ": " . cot_date('datetime_full', $ritem['item_date']) . "\n";
 
+	$body .= $L['pagereviews_review_url'] . ": " . $review_url . "\n";
+	
     $superadmins = $db->query("SELECT user_email FROM $db_users WHERE user_maingrp = 5")->fetchAll();
     foreach ($superadmins as $admin) {
         if (!empty($admin['user_email'])) {

@@ -59,14 +59,13 @@ function cot_get_pagereview_scores($pageid)
     }
     return $scores;
 }
-
 /**
  * Форма просмотра отзывов / добавление / редактирование отзыва
  */
 function cot_pagereviews_list($pageid, $showall = false)
 {
     global $db_pagereviews, $db_users, $db_pages, $db, $L, $usr, $cfg, $sys;
-	
+    
     list($usr['auth_read'], $usr['auth_write'], $usr['isadmin']) = cot_auth('plug', 'pagereviews', 'RWA');
     if (!$usr['auth_read']) {
         return '';
@@ -79,20 +78,43 @@ function cot_pagereviews_list($pageid, $showall = false)
     $page_info = $db->query("SELECT page_alias, page_cat FROM $db_pages WHERE page_id = ?", [$pageid])->fetch();
     $url_params = !empty($page_info['page_alias']) ? ['c' => $page_info['page_cat'], 'al' => $page_info['page_alias']] : ['c' => $page_info['page_cat'], 'id' => $pageid];
 
-    // Выбираем все поля пользователя для генерации тегов
+    // Пагинация
+    $per_page = (int)($cfg['plugin']['pagereviews']['reviews_per_page'] ?: 10); // Количество отзывов на страницу
+    list($pg, $d, $durl) = cot_import_pagenav('d', $per_page); // Определяем текущую страницу пагинации
+    $offset = $d; // Сдвиг для запроса к базе данных
+
+    // Формируем базовый URL для текущей страницы статьи (с учетом пагинации)
+    $base_url = cot_url('page', $url_params);  // Ссылка на текущую статью
+    $base_url_with_page = $base_url . '&d='; // Дополняем базовый URL для пагинации
+
+    // Выбираем все отзывы для текущей страницы с учетом пагинации
     $sql = $db->query("SELECT r.*, u.* FROM $db_pagereviews AS r 
         LEFT JOIN $db_users AS u ON u.user_id = r.item_userid 
-        WHERE item_pageid = ? ORDER BY item_date ASC", [$pageid]);
+        WHERE item_pageid = ? ORDER BY item_date ASC LIMIT ? OFFSET ?", [$pageid, $per_page, $offset]);
 
+    $reviews_count = $sql->rowCount(); // Количество отзывов для текущей страницы
+    $total_reviews = $db->query("SELECT COUNT(*) FROM $db_pagereviews WHERE item_pageid = ?", [$pageid])->fetchColumn(); // Общее количество отзывов
+    $t1->assign('COT_REVIEWS_COUNT', $total_reviews); // Общее количество отзывов для пагинации
 
-    $reviews_count = $sql->rowCount();
-    $t1->assign('COT_REVIEWS_COUNT', $reviews_count);
-    $redirect = cot_url('page', $url_params, '', true);
-    $redirect = base64_encode($redirect);
-
+    // Выводим отзывы
     while ($item = $sql->fetch()) {
         // Если пользователь существует, используем его данные; иначе передаем emptyname
         $t1->assign(cot_generate_usertags($item, 'REVIEW_ROW_', 'Неизвестный'));
+        $redirect = base64_encode(cot_url('page', array_merge($url_params, ['d' => $durl]), '', true));
+        $edit_url = ($usr['isadmin'] || $usr['id'] == $item['item_userid']) ? 
+            cot_url('plug', [
+                'e' => 'pagereviews',
+                'm' => 'edit',
+                'pageid' => $pageid,
+                'itemid' => $item['item_id'],
+                'redirect' => $redirect
+            ]) : '';
+        $review_url = cot_url('plug', [
+            'e' => 'pagereviews',
+            'm' => 'main',
+            'itemid' => $item['item_id'],
+            'pageid' => $pageid
+        ]);
         $t1->assign([
             'REVIEW_ROW_ID' => $item['item_id'],
             'REVIEW_ROW_TEXT' => $item['item_text'],
@@ -103,56 +125,17 @@ function cot_pagereviews_list($pageid, $showall = false)
             'REVIEW_ROW_SCORE' => $item['item_score'],
             'REVIEW_ROW_STARS' => cot_generate_stars_page($item['item_score']),
             'REVIEW_ROW_DATE' => $item['item_date'],
-            'REVIEW_ROW_DELETE_URL' => ($usr['id'] == $item['item_userid'] || $usr['isadmin']) ? 
+            'REVIEW_ROW_DELETE_URL' => ($usr['isadmin'] || $usr['id'] == $item['item_userid']) ? 
                 cot_url('plug', [
-                    'r' => 'pagereviews',
-                    'a' => 'delete',
+                    'e' => 'pagereviews',
+                    'm' => 'delete',
                     'pageid' => $pageid,
                     'itemid' => $item['item_id'],
                     'redirect' => $redirect
                 ]) : '',
+            'REVIEW_ROW_EDIT_URL' => $edit_url,
+            'REVIEW_ROW_URL' => $review_url,
         ]);
-
-        if ($usr['id'] == $item['item_userid'] || $usr['isadmin']) {
-            $user_options = [];
-            if ($usr['isadmin']) {
-                $users_sql = $db->query("SELECT user_id, user_name FROM $db_users ORDER BY user_name ASC");
-                while ($u = $users_sql->fetch()) {
-                    $user_options[$u['user_id']] = htmlspecialchars($u['user_name']);
-                }
-            }
-
-            $date_value = !empty($item['item_date']) ? (int)$item['item_date'] : (int)$sys['now'];
-            $edit_url = cot_url('plug', [
-                'e' => 'pagereviews',
-                'm' => 'edit',
-                'pageid' => $pageid,
-                'itemid' => $item['item_id'],
-                'redirect' => $redirect
-            ]);
-
-            $owner = $db->query("SELECT * FROM $db_users WHERE user_id = ?", [$item['item_userid']])->fetch();
-            $t1->assign(cot_generate_usertags($owner ?: [], 'EDIT_FORM_OWNER_', 'Неизвестный'));
-
-            $t1->assign([
-                'EDIT_FORM_ID' => $item['item_id'],
-                'EDIT_FORM_SEND' => $edit_url,
-                'EDIT_FORM_TEXT' => cot_textarea('rtext', $item['item_text'], 5, 50, 'class="form-control"'),
-                'EDIT_FORM_TITLE' => cot_inputbox('text', 'rtitle', $item['item_title'], 'class="form-control" maxlength="255"'),
-                'EDIT_FORM_SCORE' => cot_radiobox($item['item_score'], 'rscore', $L['pagereviews_score_values'], $L['pagereviews_score_titles'], 'class="form-control"'),
-                'EDIT_FORM_USERID' => $usr['isadmin'] ? cot_selectbox($item['item_userid'], 'ruserid', array_keys($user_options), array_values($user_options), true, 'class="form-control"') : '',
-                'EDIT_FORM_DATE' => $usr['isadmin'] ? cot_selectbox_date($date_value, 'long', 'rdate', date('Y', $sys['now']), date('Y', $sys['now']) - 5, false, '', 'class="form-control d-inline-block w-auto"') : '',
-                'EDIT_FORM_DELETE_URL' => cot_url('plug', [
-                    'r' => 'pagereviews',
-                    'a' => 'delete',
-                    'pageid' => $pageid,
-                    'itemid' => $item['item_id'],
-                    'redirect' => $redirect
-                ]),
-            ]);
-
-            $t1->parse('MAIN.REVIEWS_ROWS.EDIT_FORM');
-        }
         
         $t1->parse('MAIN.REVIEWS_ROWS');
     }
@@ -178,7 +161,7 @@ function cot_pagereviews_list($pageid, $showall = false)
                 'e' => 'pagereviews',
                 'm' => 'add',
                 'pageid' => $pageid,
-                'redirect' => $redirect
+                'redirect' => base64_encode($base_url_with_page . $d)
             ]);
 
             $t1->assign([
@@ -193,6 +176,10 @@ function cot_pagereviews_list($pageid, $showall = false)
             $t1->parse('MAIN.ADD_FORM');
         }
     }
+
+    // Пагинация
+    $pagenav = cot_pagenav('page', $url_params, $d, $total_reviews, $per_page, 'd');
+    $t1->assign(cot_generatePaginationTags($pagenav));
 
     $t1->parse('MAIN');
     return $t1->text('MAIN');
@@ -267,6 +254,8 @@ function cot_get_pagereview_counts_by_categories()
 
     return $counts;
 }
+
+
 /**
  * Select categories for search form in pagereviews. Используется с Select2 (https://select2.org/)
  *
@@ -503,3 +492,4 @@ function cot_pagereviews_build_structure_tree($parent = '', $selected = '', $lev
     $t1->parse('MAIN');
     return $t1->text('MAIN');
 }
+?>

@@ -15,6 +15,13 @@ defined('COT_CODE') && defined('COT_PLUG') or die('Wrong URL');
 require_once cot_incfile('pagereviews', 'plug');
 require_once cot_langfile('pagereviews', 'plug');
 
+// Устанавливаем мета-заголовок страницы
+$metaTitle = Cot::$cfg['plugin']['pagereviews']['metatitletext'] ?: $L['pagereviews_all_reviews_page_title'];
+Cot::$out['subtitle'] = $metaTitle;
+// Устанавливаем мета-описание страницы
+$metaDesc = Cot::$cfg['plugin']['pagereviews']['metadescrtext'] ?: $L['pagereviews_all_reviews_page_metadescrtext'];
+Cot::$out['desc'] = $metaDesc;
+
 $sq = cot_import('sq', 'G', 'TXT'); // Поисковая строка
 $sort = cot_import('sort', 'G', 'ALP'); // Параметр сортировки
 $c = cot_import('c', 'G', 'ALP'); // Категория страницы
@@ -146,7 +153,14 @@ while ($item = $sql->fetch()) {
     $t->assign(cot_generate_usertags($item, 'REVIEW_ROW_OWNER_', 'Неизвестный'));
 
     $url_params = !empty($item['page_alias']) ? ['c' => $item['page_cat'], 'al' => $item['page_alias']] : ['c' => $item['page_cat'], 'id' => $item['item_pageid']];
-
+	
+	// Проверка, является ли текущий пользователь автором отзыва
+	$is_own_review = ($item['item_userid'] == $usr['id']);
+	
+	// Проверяет, есть ли запись в таблице $db_pagereviews_complaints для данного отзыва (item_id) и текущего пользователя ($usr['id']), чтобы определить, подавал ли пользователь жалобу
+	$complaint_exists = (bool)$db->query("SELECT COUNT(*) FROM $db_pagereviews_complaints 
+    WHERE complaint_itemid = ? AND complaint_userid = ?", [$item['item_id'], $usr['id']])->fetchColumn();
+	
     $redirect = base64_encode(cot_url('plug', ['e' => 'pagereviews', 'm' => 'list', 'd' => $durl], '', true));
     $delete_url = ($usr['isadmin'] || $usr['id'] == $item['item_userid']) ? 
         cot_url('plug', [
@@ -156,13 +170,23 @@ while ($item = $sql->fetch()) {
             'itemid' => $item['item_id'],
             'redirect' => $redirect
         ]) : '';
-    $complaint_url = cot_url('plug', [
+$complaint_url = ($usr['id'] > 0 && !$is_own_review && !$complaint_exists) ? 
+    cot_url('plug', [
         'e' => 'pagereviews',
         'm' => 'claim',
         'pageid' => $item['item_pageid'],
         'itemid' => $item['item_id'],
         'redirect' => $redirect
-    ]);
+    ]) : '';
+/* $complaint_url = ($usr['id'] > 0 && !$is_own_review) ? 
+    cot_url('plug', [
+        'e' => 'pagereviews',
+        'm' => 'claim',
+        'pageid' => $item['item_pageid'],
+        'itemid' => $item['item_id'],
+        'redirect' => $redirect
+    ]) : ''; */
+
     $edit_url = ($usr['isadmin'] || $usr['id'] == $item['item_userid']) ? 
         cot_url('plug', [
             'e' => 'pagereviews',
@@ -171,6 +195,12 @@ while ($item = $sql->fetch()) {
             'itemid' => $item['item_id'],
             'redirect' => $redirect
         ]) : '';
+    $review_url = cot_url('plug', [
+        'e' => 'pagereviews',
+        'm' => 'main',
+        'itemid' => $item['item_id'],
+        'pageid' => $item['item_pageid']
+    ]);
 
     $t->assign([
         'REVIEW_ROW_ID' => $item['item_id'],
@@ -187,7 +217,46 @@ while ($item = $sql->fetch()) {
         'REVIEW_ROW_DELETE_URL' => $delete_url,
         'REVIEW_ROW_COMPLAINT_URL' => $complaint_url,
         'REVIEW_ROW_EDIT_URL' => $edit_url,
+        'REVIEW_ROW_URL' => $review_url,
+		'REVIEW_ROW_COMPLAINT_EXISTS' => $complaint_exists,
+		'REVIEW_ROW_IS_OWN_REVIEW' => $is_own_review,
     ]);
+
+    if ($usr['id'] == $item['item_userid'] || $usr['isadmin']) {
+        $user_options = [];
+        if ($usr['isadmin']) {
+            $users_sql = $db->query("SELECT user_id, user_name FROM $db_users ORDER BY user_name ASC");
+            while ($u = $users_sql->fetch()) {
+                $user_options[$u['user_id']] = htmlspecialchars($u['user_name']);
+            }
+        }
+
+        $date_value = !empty($item['item_date']) ? (int)$item['item_date'] : (int)$sys['now'];
+        $edit_url = cot_url('plug', [
+            'e' => 'pagereviews',
+            'm' => 'edit',
+            'pageid' => $item['item_pageid'],
+            'itemid' => $item['item_id'],
+            'redirect' => base64_encode(cot_url('plug', ['e' => 'pagereviews', 'm' => 'list', 'd' => $durl], '', true))
+        ]);
+
+        $owner = $db->query("SELECT * FROM $db_users WHERE user_id = ?", [$item['item_userid']])->fetch();
+        $t->assign(cot_generate_usertags($owner ?: [], 'EDIT_FORM_OWNER_', 'Неизвестный'));
+
+        $t->assign([
+            'EDIT_FORM_ID' => $item['item_id'],
+            'EDIT_FORM_SEND' => $edit_url,
+            'EDIT_FORM_TEXT' => cot_textarea('rtext', $item['item_text'], 5, 50, 'class="form-control" required'),
+            'EDIT_FORM_TITLE' => cot_inputbox('text', 'rtitle', $item['item_title'], 'class="form-control" maxlength="255" required'),
+            'EDIT_FORM_SCORE' => cot_radiobox($item['item_score'], 'rscore', $L['pagereviews_score_values'], $L['pagereviews_score_titles'], 'class="form-check-input" required'),
+            'EDIT_FORM_USERID' => $usr['isadmin'] ? cot_selectbox($item['item_userid'], 'ruserid', array_keys($user_options), array_values($user_options), true, 'class="form-control"') : '',
+            'EDIT_FORM_DATE' => $usr['isadmin'] ? cot_selectbox_date($date_value, 'long', 'rdate', date('Y', $sys['now']), date('Y', $sys['now']) - 5, false, '', 'class="form-control d-inline-block w-auto"') : '',
+            'EDIT_FORM_ITEMID' => cot_inputbox('hidden', 'itemid', $item['item_id']),
+            'EDIT_FORM_PAGEID' => cot_inputbox('hidden', 'pageid', $item['item_pageid']),
+        ]);
+
+        $t->parse('MAIN.REVIEW_ROW.EDIT_FORM');
+    }
 
     $t->parse('MAIN.REVIEW_ROW');
 }
@@ -196,5 +265,4 @@ $pagenav = cot_pagenav('plug', ['e' => 'pagereviews', 'm' => 'list', 'sq' => $sq
 $t->assign(cot_generatePaginationTags($pagenav));
 
 cot_display_messages($t);
-
 ?>

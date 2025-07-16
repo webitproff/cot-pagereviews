@@ -50,7 +50,7 @@ if ($usr['isadmin'] && $_SERVER['REQUEST_METHOD'] == 'POST' && $action && $compl
 
 // Админ: список жалоб
 if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
-	$sql = $db->query("SELECT c.*, r.item_title, r.item_pageid, p.page_title, p.page_cat, p.page_alias, u.user_name 
+    $sql = $db->query("SELECT c.*, r.item_title, r.item_pageid, p.page_title, p.page_cat, p.page_alias, u.user_id, u.user_name 
         FROM $db->pagereviews_complaints AS c
         LEFT JOIN $db->pagereviews AS r ON r.item_id = c.complaint_itemid
         LEFT JOIN $db->pages AS p ON p.page_id = r.item_pageid
@@ -62,6 +62,11 @@ if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
             'COMPLAINT_ROW_ID' => $complaint['complaint_id'],
             'COMPLAINT_ROW_TEXT' => htmlspecialchars($complaint['complaint_text'] ?? ''),
             'COMPLAINT_ROW_USER_NAME' => htmlspecialchars($complaint['user_name'] ?: 'Неизвестный'),
+
+			//'COMPLAINT_ROW_USER_URL' => cot_url('users', ['m' => 'details', 'id' => $complaint['user_id'], 'u' => $complaint['user_name']]),
+			'COMPLAINT_ROW_USER_URL' => isset($complaint['user_id']) ? cot_url('users', ['m' => 'details', 'id' => $complaint['user_id'], 'u' => $complaint['user_name']]) : '#',
+
+
             'COMPLAINT_ROW_REVIEW_TITLE' => htmlspecialchars($complaint['item_title'] ?: ''),
             'COMPLAINT_ROW_PAGE_TITLE' => htmlspecialchars($complaint['page_title'] ?: 'Без названия'),
             'COMPLAINT_ROW_PAGE_URL' => $complaint['item_pageid'] ? cot_url('page', $url_params, '', true) : '#',
@@ -87,12 +92,14 @@ if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
     }
     $review = $sql->fetch();
 
+    // Проверка существования жалобы
+    $complaint_exists = (bool)$db->query("SELECT COUNT(*) FROM $db_pagereviews_complaints 
+        WHERE complaint_itemid = ? AND complaint_userid = ?", [$itemid, $usr['id']])->fetchColumn();
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($complaint_text)) {
         cot_shield_protect();
 
         cot_check(empty($complaint_text), 'pagereviews_error_empty_complaint_text');
-        $complaint_exists = (bool)$db->query("SELECT COUNT(*) FROM $db_pagereviews_complaints 
-            WHERE complaint_itemid = ? AND complaint_userid = ?", [$itemid, $usr['id']])->fetchColumn();
         cot_check($complaint_exists, 'pagereviews_error_complaint_exists');
 
         if (!cot_error_found()) {
@@ -117,8 +124,8 @@ if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
             $body .= $L['pagereviews_complaint_id'] . ": " . $complaint_id . "\n";
             $body .= $L['pagereviews_complaint_text'] . ": " . htmlspecialchars($rcomplaint['complaint_text'] ?? '') . "\n";
             $body .= $L['pagereviews_complaint_author'] . ": " . $complainant_name . "\n";
-            $body .= $L['pagereviews_review_title'] . ": " . htmlspecialchars($review['item_title'] ?? '') . "\n";
-            $body .= $L['pagereviews_review_text'] . ": " . htmlspecialchars($review['item_text'] ?? '') . "\n";
+            $body .= $L['pagereviews_maintitle'] . ": " . htmlspecialchars($review['item_title'] ?? '') . "\n";
+            $body .= $L['pagereviews_text'] . ": " . htmlspecialchars($review['item_text'] ?? '') . "\n";
             $body .= $L['pagereviews_score'] . ": " . ($review['item_score'] ?? 0) . "/5\n";
             $body .= $L['pagereviews_author'] . ": " . $reviewer_name . "\n";
             $body .= $L['pagereviews_page'] . ": " . ($review['page_title'] ?? 'Без названия') . " (" . $cfg['mainurl'] . '/' . cot_url('page', $default_url_params, '', true) . ")\n";
@@ -132,6 +139,13 @@ if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
             $body .= $L['pagereviews_complaint_view_url'] . ": " . $cfg['mainurl'] . '/' . cot_url('plug', [
                 'e' => 'pagereviews', 'm' => 'claim', 'id' => $complaint_id
             ], '', true) . "\n";
+            $review_url = $cfg['mainurl'] . '/' . cot_url('plug', [
+                'e' => 'pagereviews',
+                'm' => 'main',
+                'itemid' => $itemid,
+                'pageid' => $pageid
+            ], '', true);
+            $body .= $L['pagereviews_review_url'] . ": " . $review_url . "\n";
 
             $superadmins = $db->query("SELECT user_email FROM $db_users WHERE user_maingrp = 5")->fetchAll();
             foreach ($superadmins as $admin) {
@@ -145,6 +159,7 @@ if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
         }
     }
 
+    // Назначаем теги для шаблона
     $t->assign([
         'COMPLAINT_FORM_SEND' => cot_url('plug', ['e' => 'pagereviews', 'm' => 'claim', 'itemid' => $itemid, 'pageid' => $pageid, 'redirect' => $redirect]),
         'COMPLAINT_FORM_TEXT' => cot_textarea('complaint_text', '', 5, 50, ['class' => 'form-control', 'required' => 'required']),
@@ -153,8 +168,15 @@ if ($usr['isadmin'] && empty($itemid) && empty($pageid)) {
         'COMPLAINT_REVIEW_SCORE' => $review['item_score'] ?: 0,
         'COMPLAINT_PAGE_URL' => cot_url('page', $default_url_params, '', true),
         'COMPLAINT_PAGE_TITLE' => htmlspecialchars($review['page_title'] ?: 'Без названия'),
+        'COMPLAINT_ALREADY_SUBMITTED' => $complaint_exists ? $L['pagereviews_complaint_already_submitted'] : '',
     ]);
-	$t->parse('MAIN.USER_COMPLAINT');
+
+    // Условный парсинг в зависимости от существования жалобы
+    if ($complaint_exists) {
+        $t->parse('MAIN.COMPLAINT_ALREADY_SUBMITTED');
+    } else {
+        $t->parse('MAIN.USER_COMPLAINT');
+    }
 }
 
 cot_display_messages($t);

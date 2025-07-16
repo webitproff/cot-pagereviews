@@ -26,17 +26,14 @@ require_once cot_incfile('uploads');
 require_once cot_incfile('forms');
 
 // Mode choice
-if (!in_array($m, array('add', 'edit', 'claim', 'delete')))
-{
-	$id = cot_import('id','G','NOC'); // for 404 on bad ID
-	if (isset($id))
-	{
-		$m = 'main';
-	}
-	else
-	{
-		$m = 'list';
-	}
+if (!in_array($m, ['add', 'edit', 'claim', 'delete'])) {
+    $itemid = cot_import('itemid', 'G', 'INT');
+    $pageid = cot_import('pageid', 'G', 'INT');
+    if ($itemid && $pageid) {
+        $m = 'main';
+    } else {
+        $m = 'list';
+    }
 }
 
 require_once cot_incfile('pagereviews', 'plug', $m);

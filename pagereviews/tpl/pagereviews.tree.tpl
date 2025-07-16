@@ -2,9 +2,9 @@
 <ul<!-- IF {LEVEL} == 0 --> class="nav flex-column"<!-- ELSE --> class="nav flex-column ps-3"<!-- ENDIF -->>
 	<!-- IF {LEVEL} == 0 -->
 	<li class="nav-item">
-			<i class="fa-regular fa-folder me-2"></i>
+			<div class="mx-3"><i class="fa-regular fa-folder me-2"></i>
 			<span>{PHP.L.All}</span>
-			<span class="ms-auto">({TOTAL_COUNT})</span>
+			<span class="ms-auto">({TOTAL_COUNT})</span></div>
 
 	</li>
 	<hr class="my-2">

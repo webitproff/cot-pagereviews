@@ -1,29 +1,33 @@
-<!-- 
-/********************************************************************************
- * File: pagereviews.claim.tpl
- * Extension: plugin 'pagereviews'
- * Description: Template for submitting and managing complaints about reviews
- * Compatibility: CMF/CMS Cotonti Siena v0.9.26
- * Dependencies: Bootstrap 5.3.3, Font Awesome Free 6.7.2
- * Theme: CleanCot  
- * Version: 1.0.1 
- * Created: 13 May 2025 
- * Author: webitprof 
- * License: MIT   
- ********************************************************************************/
--->
 <!-- BEGIN: MAIN -->
+<div class="py-2 border-bottom border-secondary">
+  <div class="container py-2">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0 flex-nowrap overflow-x-auto">
+        <li class="breadcrumb-item">
+          <a href="{PHP.cfg.mainurl}">
+            <i class="fa-solid fa-house fa-lg"></i>
+          </a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{PHP|cot_url('pagereviews', 'a=list')}" title="{PHP.L.pagereviews_all_reviews_page_title}">{PHP.L.pagereviews_all_reviews_page_title}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{PHP.L.pagereviews_complaints} </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+<div class="container-xl min-height-50vh py-4">
 
-<h1>{PHP.L.pagereviews_complaints}</h1>
 
 <!-- BEGIN: ADMIN_COMPLAINTS -->
+<h1>{PHP.L.pagereviews_complaints}</h1>
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
             <th>{PHP.L.pagereviews_complaint_id}</th>
             <th>{PHP.L.pagereviews_complaint_text}</th>
             <th>{PHP.L.pagereviews_complaint_user}</th>
-            <th>{PHP.L.pagereviews_review_title}</th>
+            <th>{PHP.L.pagereviews_maintitle}</th>
             <th>{PHP.L.pagereviews_page}</th>
             <th>{PHP.L.pagereviews_actions}</th>
         </tr>
@@ -33,7 +37,7 @@
         <tr>
             <td>{COMPLAINT_ROW_ID}</td>
             <td>{COMPLAINT_ROW_TEXT}</td>
-            <td>{COMPLAINT_ROW_USER_NAME}</td>
+            <td><a href="{COMPLAINT_ROW_USER_URL}" target="_blank">{COMPLAINT_ROW_USER_NAME}</a></td>
             <td>{COMPLAINT_ROW_REVIEW_TITLE}</td>
             <td><a href="{COMPLAINT_ROW_PAGE_URL}" target="_blank">{COMPLAINT_ROW_PAGE_TITLE}</a></td>
             <td>
@@ -61,21 +65,29 @@
     <h2>{PHP.L.pagereviews_file_complaint}</h2>
     
     <div class="alert alert-info">
-        <strong>{PHP.L.pagereviews_review_title}:</strong> {COMPLAINT_REVIEW_TITLE}<br>
+        <strong>{PHP.L.pagereviews_maintitle}:</strong> {COMPLAINT_REVIEW_TITLE}<br>
         <strong>{PHP.L.pagereviews_score}:</strong> {COMPLAINT_REVIEW_SCORE}/5<br>
-        <strong>{PHP.L.pagereviews_review_text}:</strong><br>
+        <strong>{PHP.L.pagereviews_text}:</strong>
         <div class="well">{COMPLAINT_REVIEW_TEXT}</div>
         <strong>{PHP.L.pagereviews_page}:</strong> <a href="{COMPLAINT_PAGE_URL}">{COMPLAINT_PAGE_TITLE}</a>
     </div>
 
     <form action="{COMPLAINT_FORM_SEND}" method="post">
-        <div class="form-group">
-            <label for="complaint_text">{PHP.L.pagereviews_complaint_reason}:</label>
-            {COMPLAINT_FORM_TEXT}
+        <div class="form-group mb-3">
+            <label for="complaint_text "><span class="mb-3 h5 text-danger fw-semibold">{PHP.L.pagereviews_complaint_reason}:</span></label>
+            <div class="mt-3">{COMPLAINT_FORM_TEXT}</div>
         </div>
+		<div class="form-group mb-3">
         <button type="submit" class="btn btn-primary">{PHP.L.Submit}</button>
+		</div>
     </form>
 </div>
 <!-- END: USER_COMPLAINT -->
 
+<!-- BEGIN: COMPLAINT_ALREADY_SUBMITTED -->
+<div class="alert alert-warning">
+    {COMPLAINT_ALREADY_SUBMITTED}
+</div>
+<!-- END: COMPLAINT_ALREADY_SUBMITTED -->
+</div>
 <!-- END: MAIN -->

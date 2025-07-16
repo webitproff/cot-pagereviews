@@ -1,21 +1,4 @@
-<!-- 
-/********************************************************************************
- * File: pagereviews.last.tpl
- * Extention: plugin 'pagereviews'
- * Description: Шаблон последних отзывов на главной странице сайта. В шаблоне index.tpl подключаем через {PHP|cot_pagereviews_last(5)}
- * Compatibility: CMF/CMS Cotonti Siena v0.9.26 (https://github.com/Cotonti/Cotonti)
- * Dependencies: Bootstrap 5.3.3 (https://getbootstrap.com/); Font Awesome Free 6.7.2 (https://fontawesome.com/)
- * Theme: CleanCot  
- * Version: 1.0.2 
- * Created: 07 March 2025 
- * Updated: 12 May 2025 
- * Author: webitproff 
- * Source: https://github.com/webitproff/cot-CleanCot 
- * Demo:  https://cleancot.previewit.work
- * Help and support: https://abuyfile.com/ru/forums/cotonti/original/skins/cleancot
- * License: MIT  
- ********************************************************************************/
--->
+
 
 <!-- BEGIN: MAIN -->
 <div class="latest-reviews">
