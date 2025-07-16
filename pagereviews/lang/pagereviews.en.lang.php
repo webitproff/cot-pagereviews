@@ -77,6 +77,10 @@ $L['pagereviews_complaint_processed'] = 'Complaint processed.';
 $L['pagereviews_error_complaint_exists'] = 'You have already submitted a complaint for this review.';
 $L['pagereviews_error_empty_complaint_text'] = 'You did not provide complaint text.';
 $L['pagereviews_error_invalidreview'] = 'Invalid review.';
+$L['pagereviews_pageRatingValue'] = 'Rating';
+$L['pagereviews_pageCountStarsTotalValue'] = 'Total Stars';
+$L['pagereviews_pageCountReviewsTotalValue'] = 'Total Reviews';
+$L['pagereviews_pageAverageRatingValue'] = 'Average Rating';
 
 /**
  * Notifications
