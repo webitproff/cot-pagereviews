@@ -2,6 +2,18 @@
 Page Reviews Plugin for adding reviews to articles
 ### ver alfa ###
 
+<img src="https://raw.githubusercontent.com/webitproff/cot-pagereviews/refs/heads/main/pagereviews_001.jpg" alt="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" title="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" />
+
+<img src="https://raw.githubusercontent.com/webitproff/cot-pagereviews/refs/heads/main/pagereviews_002.jpg" alt="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" title="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" />
+
+<img src="https://raw.githubusercontent.com/webitproff/cot-pagereviews/refs/heads/main/pagereviews_003.jpg" alt="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" title="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" />
+
+<img src="https://raw.githubusercontent.com/webitproff/cot-pagereviews/refs/heads/main/pagereviews_004.jpg" alt="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" title="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" />
+
+<img src="https://raw.githubusercontent.com/webitproff/cot-pagereviews/refs/heads/main/pagereviews_005.jpg" alt="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" title="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" />
+
+
+
 in `page.tpl`
 
 1
@@ -21,6 +33,16 @@ in `page.tpl`
             <hr>
             <!-- ENDIF -->
 ```
+
+3. anywhere
+```
+		<!-- IF {PHP|cot_plugin_active('pagereviews')} -->
+		{PHP|cot_pagereviews_last(4)}
+		<!-- ENDIF -->
+```
+
+   
+
 > **Attention!** Upon completion of the installation, the conditions outlined in points №4 and №5 of the installation instructions for the [treecatspage](https://github.com/webitproff/cot-treecatspage) plugin must be fulfilled.
 
 ## System Requirements
