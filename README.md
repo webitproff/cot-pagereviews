@@ -34,7 +34,7 @@ in `page.tpl`
             <!-- ENDIF -->
 ```
 
-3. anywhere
+3. anywhere `index.tpl`, `page.list.tpl`
 ```
 		<!-- IF {PHP|cot_plugin_active('pagereviews')} -->
 		{PHP|cot_pagereviews_last(4)}
@@ -49,3 +49,5 @@ in `page.tpl`
 
 - **Cotonti Siena**: v.0.9.26
 - **PHP**: 8.4 or higher
+---
+If you need help or have questions, you can also post in Russian or English on the [forum](https://abuyfile.com/en/forums/cotonti/custom/plugs).
