@@ -18,3 +18,9 @@ Page Reviews Plugin for adding reviews to articles
             <hr>
             <!-- ENDIF -->
 ```
+> **Attention!** Upon completion of the installation, the conditions outlined in points №4 and №5 of the installation instructions for the [treecatspage](https://github.com/webitproff/cot-treecatspage) plugin must be fulfilled.
+
+## System Requirements
+
+- **Cotonti Siena**: v.0.9.26
+- **PHP**: 8.4 or higher
