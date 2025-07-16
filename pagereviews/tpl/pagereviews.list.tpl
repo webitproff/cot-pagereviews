@@ -16,7 +16,7 @@
             <h2 class="h5 mb-4">{PHP.L.pagereviews_all_reviews_page_desc}</h2>
             {FILE "{PHP.cfg.themes_dir}/{PHP.cfg.defaulttheme}/warnings.tpl"}
 
-            <div class="p-3 rounded-2" style="border: 5px var(--bs-primary-border-subtle) solid;">
+            <div class="p-3 rounded-2 mb-4" style="border: 5px var(--bs-primary-border-subtle) solid;">
                 <form action="{SEARCH_ACTION_URL}" method="get" class="mb-4">
                     <input type="hidden" name="e" value="pagereviews" />
                     <input type="hidden" name="m" value="list" />
