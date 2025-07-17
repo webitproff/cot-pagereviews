@@ -229,15 +229,20 @@ Adds review counts and ratings to a list of articles.
 
 Displays reviews by a specific user in their profile.
 
-```html
+```
 <!-- IF {PHP|cot_plugin_active('pagereviews')} AND {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
 <div class="user-reviews">
     <h2>{PHP.L.pagereviews_reviews} ({PHP.L.pagereviews_author}: {USERS_DETAILS_NAME})</h2>
     
-    <!-- User Reviews -->
-    {PHP|cot_pagereviews_list(0, false, {USERS_DETAILS_ID})}
+    <!-- Проверка наличия отзывов -->
+    <!-- IF {PHP|cot_pagereviews_user_has_reviews({USERS_DETAILS_ID})} -->
+    <!-- Вывод отзывов пользователя -->
+    {PHP|cot_pagereviews_user_reviews({USERS_DETAILS_ID})}
+    <!-- ELSE -->
+    <p>{PHP.L.pagereviews_no_reviews}</p>
+    <!-- ENDIF -->
     
-    <!-- Link to All User Reviews -->
+    <!-- Ссылка на все отзывы пользователя -->
     <a href="{PHP|cot_url('plug', 'e=pagereviews&m=list&user={USERS_DETAILS_ID}')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
     
     <hr>
