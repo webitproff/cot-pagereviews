@@ -1,8 +1,6 @@
-
-
 <!-- BEGIN: MAIN -->
 <div class="latest-reviews">
-    <h2>{PHP.L.pagereviews_last_index}</h2>
+    <h2 class="h6"><a href="{PHP|cot_url('pagereviews', 'a=list')}">{PHP.L.pagereviews_last_index}</a></h2>
     <!-- IF {COT_REVIEWS_COUNT} == 0 -->
     <p>{PHP.L.pagereviews_no_reviews}</p>
     <!-- ELSE -->
@@ -12,7 +10,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{REVIEW_ROW_TITLE}</h5>
-                    <p class="card-text">{REVIEW_ROW_STARS}</p>
+                    <div><span class="review-stars">{REVIEW_ROW_STARS}</span></div>
                     <p class="card-text">{REVIEW_ROW_TEXT|cot_string_truncate($this, 150)}</p>
                     <p class="card-text">
                         <small class="text-muted">
@@ -27,9 +25,10 @@
         <!-- END: REVIEW_ROW -->
     </div>
     <!-- ENDIF -->
-	<a href="{PHP|cot_url('pagereviews', 'a=list')}">{PHP.L.pagereviews_all_reviews}</a>
+	
 </div>
 <!-- END: MAIN -->
+<a href="{PHP|cot_url('pagereviews', 'a=list')}">{PHP.L.pagereviews_all_reviews}</a>
 <div class="last-reviews">
     <h2>{PHP.L.pagereviews_last_index}</h2>
     <!-- BEGIN: REVIEW_ROW -->
