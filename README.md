@@ -230,24 +230,24 @@ Adds review counts and ratings to a list of articles.
 Displays reviews by a specific user in their profile.
 
 ```
-<!-- IF {PHP|cot_plugin_active('pagereviews')} AND {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
-<div class="user-reviews">
-    <h2>{PHP.L.pagereviews_reviews} ({PHP.L.pagereviews_author}: {USERS_DETAILS_NAME})</h2>
-    
-    <!-- Проверка наличия отзывов -->
-    <!-- IF {PHP|cot_pagereviews_user_has_reviews({USERS_DETAILS_ID})} -->
-    <!-- Вывод отзывов пользователя -->
-    {PHP|cot_pagereviews_user_reviews({USERS_DETAILS_ID})}
-    <!-- ELSE -->
-    <p>{PHP.L.pagereviews_no_reviews}</p>
-    <!-- ENDIF -->
-    
-    <!-- Ссылка на все отзывы пользователя -->
-    <a href="{PHP|cot_url('plug', 'e=pagereviews&m=list&user={USERS_DETAILS_ID}')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
-    
-    <hr>
-</div>
-<!-- ENDIF -->
+				<!-- IF {PHP|cot_plugin_active('pagereviews')} AND {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
+				<div class="user-reviews">
+				  <h2>{PHP.L.pagereviews_reviews} ({PHP.L.pagereviews_author}: {USERS_DETAILS_NAME})</h2>
+				  <!-- Проверка наличия отзывов -->
+				  <!-- IF {USERS_DETAILS_ID|cot_pagereviews_user_has_reviews($this)} -->
+				  <!-- Вывод отзывов пользователя --> {PHP|cot_pagereviews_user_reviews({USERS_DETAILS_ID})}
+				  <!-- Ссылка на все отзывы пользователя -->
+				  <a href="{PHP|cot_url('plug', 'e=pagereviews&m=list&user={USERS_DETAILS_ID}')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
+				  <hr>
+				  <!-- ELSE -->
+				  <div class="alert alert-warning" role="alert">
+					<!-- Блок предупреждения Bootstrap -->
+					<p>{PHP.L.pagereviews_no_reviews}</p>
+				  </div>
+				  <!-- ENDIF -->
+				</div>
+				<!-- ENDIF -->
+
 ```
 
 - **Tags**:
