@@ -85,7 +85,7 @@ The **Page Reviews** plugin enhances Cotonti-based websites by adding interactiv
 ## Requirements
 
 - **CMS**: Cotonti Siena v0.9.26
-- **PHP**: 8.2
+- **PHP**: 8.2 - 8.4
 - **Modules**: `page`, `users`
 - **Dependencies**: `extrafields`, `uploads`, `forms`
 - **Optional**: Bootstrap (for form styling), Select2 (for category/user dropdowns)
