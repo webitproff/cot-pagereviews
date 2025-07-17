@@ -251,7 +251,7 @@ Displays reviews by a specific user in their profile.
 ```
 
 - **Tags**:
-  - `{PHP|cot_pagereviews_list(0, false, {USERS_DETAILS_ID})}`: Lists reviews by the user.
+  - `{PHP|cot_pagereviews_user_reviews({USERS_DETAILS_ID})}`: Lists reviews by the user.
   - `{USERS_DETAILS_ID}`: User ID for filtering.
 
 ### Category Tree in page.list.tpl
