@@ -230,29 +230,22 @@ Adds review counts and ratings to a list of articles.
 Displays reviews by a specific user in their profile.
 
 ```
-				<!-- IF {PHP|cot_plugin_active('pagereviews')} AND {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
-				<div class="user-reviews">
-				  <h2>{PHP.L.pagereviews_reviews} ({PHP.L.pagereviews_author}: {USERS_DETAILS_NAME})</h2>
-				  <!-- Проверка наличия отзывов -->
-				  <!-- IF {USERS_DETAILS_ID|cot_pagereviews_user_has_reviews($this)} -->
-				  <!-- Вывод отзывов пользователя --> {PHP|cot_pagereviews_user_reviews({USERS_DETAILS_ID})}
-				  <!-- Ссылка на все отзывы пользователя -->
-				  <a href="{PHP|cot_url('plug', 'e=pagereviews&m=list&user={USERS_DETAILS_ID}')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
-				  <hr>
-				  <!-- ELSE -->
-				  <div class="alert alert-warning" role="alert">
-					<!-- Блок предупреждения Bootstrap -->
-					<p>{PHP.L.pagereviews_no_reviews}</p>
-				  </div>
-				  <!-- ENDIF -->
-				</div>
-				<!-- ENDIF -->
-
+<!-- IF {PHP|cot_plugin_active('pagereviews')} -->
+<li class="nav-item">
+  <a class="nav-link<!-- IF {PHP.tab} == 'pagereviews' --> active<!-- ENDIF -->" href="{USERS_DETAILS_PAGEREVIEWS_URL}#tab_pagereviews" data-bs-toggle="tab" role="tab">{PHP.L.pagereviews_reviews} ({USERS_DETAILS_PAGEREVIEWS_COUNT})</a>
+</li>
+<!-- ENDIF -->
 ```
 
-- **Tags**:
-  - `{PHP|cot_pagereviews_user_reviews({USERS_DETAILS_ID})}`: Lists reviews by the user.
-  - `{USERS_DETAILS_ID}`: User ID for filtering.
+and
+
+```
+  <div class="reviews-content tab-pane fade<!-- IF {PHP.tab} == 'pagereviews' --> show active<!-- ENDIF -->" id="tab_pagereviews" role="tabpanel">
+    {PAGEREVIEWS}
+  </div>
+```
+
+for example [users.details.tpl]
 
 ### Category Tree in page.list.tpl
 
