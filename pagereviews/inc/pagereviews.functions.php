@@ -492,4 +492,109 @@ function cot_pagereviews_build_structure_tree($parent = '', $selected = '', $lev
     $t1->parse('MAIN');
     return $t1->text('MAIN');
 }
+/**
+ * Проверяет, есть ли у пользователя отзывы
+ *
+ * @param int $userid ID пользователя
+ * @return bool True, если отзывы есть, иначе false
+ */
+function cot_pagereviews_user_has_reviews($userid)
+{
+    global $db, $db_pagereviews;
+    $count = $db->query("SELECT COUNT(*) FROM $db_pagereviews WHERE item_userid = ?", [$userid])->fetchColumn();
+    return $count > 0;
+}
+
+/**
+ * Выводит отзывы пользователя
+ *
+ * @param int $userid ID пользователя
+ * @return string HTML с отзывами
+ */
+function cot_pagereviews_user_reviews($userid)
+{
+    global $db, $db_pagereviews, $db_users, $db_pages, $L, $usr, $cfg;
+
+    list($usr['auth_read'], $usr['auth_write'], $usr['isadmin']) = cot_auth('plug', 'pagereviews', 'RWA');
+    if (!$usr['auth_read']) {
+        return '';
+    }
+
+    $t = new XTemplate(cot_tplfile(['pagereviews', 'page'], 'plug'));
+
+    // Пагинация
+    $per_page = (int)($cfg['plugin']['pagereviews']['reviews_per_page'] ?: 10);
+    list($pg, $d, $durl) = cot_import_pagenav('d', $per_page);
+    $offset = $d;
+
+    // Базовый URL для пагинации
+    $base_url = cot_url('plug', ['e' => 'pagereviews', 'm' => 'list', 'user' => $userid]);
+    $base_url_with_page = $base_url . '&d=';
+
+    // Запрос отзывов пользователя
+    $sql = $db->query("SELECT r.*, u.*, p.page_alias, p.page_cat 
+        FROM $db_pagereviews AS r 
+        LEFT JOIN $db_users AS u ON u.user_id = r.item_userid 
+        LEFT JOIN $db_pages AS p ON p.page_id = r.item_pageid 
+        WHERE r.item_userid = ? 
+        ORDER BY r.item_date ASC LIMIT ? OFFSET ?", [$userid, $per_page, $offset]);
+
+    $total_reviews = $db->query("SELECT COUNT(*) FROM $db_pagereviews WHERE item_userid = ?", [$userid])->fetchColumn();
+    $t->assign('COT_REVIEWS_COUNT', $total_reviews);
+
+    // Вывод отзывов
+    while ($item = $sql->fetch()) {
+        $pageid = $item['item_pageid'];
+        $url_params = !empty($item['page_alias']) ? ['c' => $item['page_cat'], 'al' => $item['page_alias']] : ['c' => $item['page_cat'], 'id' => $pageid];
+        $page_url = cot_url('page', $url_params);
+
+        $t->assign(cot_generate_usertags($item, 'REVIEW_ROW_', 'Неизвестный'));
+        $redirect = base64_encode($page_url . '&d=' . $durl);
+        $edit_url = ($usr['isadmin'] || $usr['id'] == $item['item_userid']) ? 
+            cot_url('plug', [
+                'e' => 'pagereviews',
+                'm' => 'edit',
+                'pageid' => $pageid,
+                'itemid' => $item['item_id'],
+                'redirect' => $redirect
+            ]) : '';
+        $review_url = cot_url('plug', [
+            'e' => 'pagereviews',
+            'm' => 'main',
+            'itemid' => $item['item_id'],
+            'pageid' => $pageid
+        ]);
+        $t->assign([
+            'REVIEW_ROW_ID' => $item['item_id'],
+            'REVIEW_ROW_TEXT' => $item['item_text'],
+            'REVIEW_ROW_TITLE' => $item['item_title'],
+            'REVIEW_ROW_PAGEID' => $pageid,
+            'REVIEW_ROW_OWNERID' => $item['item_userid'],
+            'REVIEW_ROW_OWNER' => cot_build_user($item['item_userid'], htmlspecialchars($item['user_name'] ?? 'Неизвестный')),
+            'REVIEW_ROW_SCORE' => $item['item_score'],
+            'REVIEW_ROW_STARS' => cot_generate_stars_page($item['item_score']),
+            'REVIEW_ROW_DATE' => $item['item_date'],
+            'REVIEW_ROW_DELETE_URL' => ($usr['isadmin'] || $usr['id'] == $item['item_userid']) ? 
+                cot_url('plug', [
+                    'e' => 'pagereviews',
+                    'm' => 'delete',
+                    'pageid' => $pageid,
+                    'itemid' => $item['item_id'],
+                    'redirect' => $redirect
+                ]) : '',
+            'REVIEW_ROW_EDIT_URL' => $edit_url,
+            'REVIEW_ROW_URL' => $review_url,
+            'REVIEW_ROW_PAGE_URL' => $page_url
+        ]);
+
+        $t->parse('MAIN.REVIEWS_ROWS');
+    }
+
+    // Пагинация
+    $pagenav = cot_pagenav('plug', ['e' => 'pagereviews', 'm' => 'list', 'user' => $userid], $d, $total_reviews, $per_page, 'd');
+    $t->assign(cot_generatePaginationTags($pagenav));
+
+    $t->parse('MAIN');
+    return $t->text('MAIN');
+}
 ?>
