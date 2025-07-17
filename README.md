@@ -245,7 +245,7 @@ and
   </div>
 ```
 
-for example [users.details.tpl]
+for example [users.details.tpl](https://github.com/webitproff/cot-pagereviews/blob/main/users.details.tpl)
 
 ### Category Tree in page.list.tpl
 
