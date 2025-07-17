@@ -17,7 +17,7 @@ Page Reviews Plugin for adding reviews to articles
 
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Version](https://img.shields.io/badge/version-1.0.1-green.svg)](https://github.com/webitproff/cot-pagereviews/releases)
-[![Cotonti Siena](https://img.shields.io/badge/Cotonti_Siena-v0.9.26-blue.svg)](https://www.cotonti.com/)
+[![Cotonti Siena](https://img.shields.io/badge/Cotonti_Siena-v0.9.26-blue.svg)](https://github.com/Cotonti/Cotonti)
 
 **Page Reviews** is a plugin for the Cotonti Siena CMS (v0.9.26) that enables users to add, edit, delete, and rate reviews for articles created with the `page` module. It includes features for submitting complaints about reviews, filtering and sorting reviews, and integrating seamlessly with Cotonti's page and category system. The plugin supports multilingual interfaces (English and Russian) and provides robust administrative controls.
 
