@@ -520,7 +520,7 @@ function cot_pagereviews_user_reviews($userid)
         return '';
     }
 
-    $t = new XTemplate(cot_tplfile(['pagereviews', 'page'], 'plug'));
+    $t = new XTemplate(cot_tplfile(['pagereviews', 'userdetails'], 'plug'));
 
     // Пагинация
     $per_page = (int)($cfg['plugin']['pagereviews']['reviews_per_page'] ?: 10);
@@ -531,8 +531,8 @@ function cot_pagereviews_user_reviews($userid)
     $base_url = cot_url('plug', ['e' => 'pagereviews', 'm' => 'list', 'user' => $userid]);
     $base_url_with_page = $base_url . '&d=';
 
-    // Запрос отзывов пользователя
-    $sql = $db->query("SELECT r.*, u.*, p.page_alias, p.page_cat 
+    // Запрос отзывов пользователя с заголовком страницы
+    $sql = $db->query("SELECT r.*, u.*, p.page_alias, p.page_cat, p.page_title 
         FROM $db_pagereviews AS r 
         LEFT JOIN $db_users AS u ON u.user_id = r.item_userid 
         LEFT JOIN $db_pages AS p ON p.page_id = r.item_pageid 
@@ -584,7 +584,8 @@ function cot_pagereviews_user_reviews($userid)
                 ]) : '',
             'REVIEW_ROW_EDIT_URL' => $edit_url,
             'REVIEW_ROW_URL' => $review_url,
-            'REVIEW_ROW_PAGE_URL' => $page_url
+            'REVIEW_ROW_PAGE_URL' => $page_url,
+            'REVIEW_ROW_PAGE_TITLE' => htmlspecialchars($item['page_title'] ?? 'Без названия')
         ]);
 
         $t->parse('MAIN.REVIEWS_ROWS');
