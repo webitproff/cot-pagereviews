@@ -27,9 +27,9 @@ $t1 = new XTemplate(cot_tplfile(['pagereviews', 'userdetails'], 'plug'));
 $where = [];
 $order = [];
 
-if ($usr['id'] == 0 || ($usr['id'] != $urr['user_id'] && !$usr['isadmin'])) {
-    $where['state'] = "r.item_state=0";
-}
+// if ($usr['id'] == 0 || ($usr['id'] != $urr['user_id'] && !$usr['isadmin'])) {
+//    $where['state'] = "r.item_state=0";
+// }
 
 if ($category) {
     $where['cat'] = 'p.page_cat=' . $db->quote($category);
