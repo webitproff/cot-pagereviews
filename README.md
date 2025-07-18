@@ -1,5 +1,7 @@
 # cot-pagereviews
 Page Reviews Plugin for adding reviews to articles
+## [DEMo](https://abuyfile.com/en/pagereviews) ##
+
 ### [описание на русском](https://abuyfile.com/en/market/cotonti/plugs/pagereviews-pl) ###
 
 <img src="https://raw.githubusercontent.com/webitproff/cot-pagereviews/refs/heads/main/pagereviews_001.jpg" alt="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" title="Page Reviews Plugin for adding reviews to articles on Cotonti CMF" />
