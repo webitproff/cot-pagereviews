@@ -40,7 +40,7 @@
       <!-- ENDIF -->
     </div>
   </div>
-<a href="{PHP|cot_url('plug', 'e=pagereviews&m=list&user={REVIEW_ROW_OWNERID}')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
+<a href="{PHP|cot_url('plug', 'e=pagereviews&m=list&user={PHP.urr.user_id}')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
   <!-- END: REVIEWS_ROWS -->
 
   <!-- Пагинация -->
@@ -53,3 +53,4 @@
 
 </div>
 <!-- END: MAIN -->
+
