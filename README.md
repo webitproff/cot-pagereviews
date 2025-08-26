@@ -398,3 +398,390 @@ Displays a category tree with review counts.
 > **Attention!** Upon completion of the installation, the conditions outlined in points №4 and №5 of the installation instructions for the [treecatspage](https://github.com/webitproff/cot-treecatspage) plugin must be fulfilled.
 
 
+---
+
+# cot-pagereviews
+Плагин Page Reviews для добавления отзывов к статьям
+
+## [Демо](https://abuyfile.com/ru/pagereviews) ##
+
+
+# Плагин Page Reviews для Cotonti Siena
+
+[![Лицензия](https://img.shields.io/badge/license-BSD-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Версия](https://img.shields.io/badge/version-1.0.1-green.svg)](https://github.com/webitproff/cot-pagereviews/releases)
+[![Cotonti Siena](https://img.shields.io/badge/Cotonti_Siena-v0.9.26-blue.svg)](https://github.com/Cotonti/Cotonti)
+
+**Page Reviews** — это плагин для CMS Cotonti Siena (v0.9.26), который позволяет пользователям добавлять, редактировать, удалять и оценивать отзывы к статьям, созданным с помощью модуля `page`. Плагин включает функции подачи жалоб на отзывы, фильтрации и сортировки отзывов, а также бесшовную интеграцию с системой страниц и категорий Cotonti. Поддерживает многоязычный интерфейс (английский и русский) и предоставляет мощные инструменты администрирования.
+
+- **Репозиторий**: [https://github.com/webitproff/cot-pagereviews](https://github.com/webitproff/cot-pagereviews)
+- **Автор**: webitprof
+- **Версия**: 1.0.1
+- **Лицензия**: BSD
+- **Дата выпуска**: 10 мая 2025
+
+## Содержание
+
+- [Возможности](#возможности)
+- [Требования](#требования)
+- [Установка](#установка)
+- [Настройка](#настройка)
+- [Интеграция в шаблоны](#интеграция-в-шаблоны)
+  - [page.tpl](#pagetpl)
+  - [index.tpl](#indextpl)
+  - [page.list.tpl](#pagelisttpl)
+  - [users.details.tpl](#usersdetailstpl)
+  - [Дерево категорий в page.list.tpl](#дерево-категорий-в-pagelisttpl)
+- [Использование](#использование)
+- [Технические детали](#технические-детали)
+- [Удаление](#удаление)
+- [Ограничения и рекомендации](#ограничения-и-рекомендации)
+- [Поддержка](#поддержка)
+
+## Возможности
+
+Плагин **Page Reviews** расширяет функциональность сайтов на Cotonti, добавляя интерактивные отзывы к статьям. Основные возможности:
+
+### Управление отзывами
+- **Добавление отзывов**: Пользователи могут оставлять отзывы с заголовком, текстом и оценкой от 1 до 5 звезд. Администраторы могут указывать автора и дату.
+- **Редактирование/удаление отзывов**: Авторы и администраторы могут редактировать или удалять отзывы. Один пользователь — один отзыв на статью для предотвращения спама.
+- **Отображение отзывов**: Отзывы можно показывать на странице статьи или в отдельном списке с пагинацией.
+
+### Система жалоб
+- Пользователи могут подавать жалобы на некорректные отзывы, указывая причину.
+- Администраторы могут просматривать, одобрять (удаляя отзыв) или отклонять жалобы.
+- Уведомления по email отправляются администраторам о новых жалобах и их разрешении.
+
+### Интеграция с Cotonti
+- **Страницы и категории**: Отзывы привязаны к модулю `page` и учитывают структуру категорий.
+- **Теги шаблонов**: Предоставляет теги для шаблонов статей (`page.tpl`) для отображения отзывов, их количества и статистики (например, `PAGE_REVIEWS`, `REVIEWS_AVG_STARS`).
+- **Многоязычность**: Включает файлы локализации на английском (`en`) и русском (`ru`).
+
+### Фильтрация и сортировка
+- **Поиск**: Фильтрация отзывов по заголовку или тексту.
+- **Фильтры по категориям и пользователям**: Фильтрация по категории страницы или автору отзыва.
+- **Параметры сортировки**: Сортировка по дате (по возрастанию/убыванию), рейтингу (по возрастанию/убыванию) или новизне.
+- **Пагинация**: Настраиваемое количество отзывов на странице.
+
+### Поддержка AJAX
+- Автодополнение имен пользователей при фильтрации отзывов по автору.
+
+### Администрирование
+- Администраторы могут изменять автора и дату отзыва.
+- Интерфейс управления жалобами для просмотра и обработки.
+- Уведомления по email о действиях с отзывами (добавление, редактирование, удаление) и жалобах.
+
+### Настройка
+- Настраиваемые параметры отображения отзывов, пагинации и черного списка категорий.
+- Настраиваемые мета-заголовки и описания для SEO.
+
+## Требования
+
+- **CMS**: Cotonti Siena v0.9.26
+- **PHP**: 8.2 - 8.4
+- **Модули**: `page`, `users`
+- **Зависимости**: `extrafields`, `uploads`, `forms`
+- **Опционально**: Bootstrap (для стилизации форм), Select2 (для выпадающих списков категорий/пользователей)
+
+## Установка
+
+1. **Скачивание**: Клонируйте или скачайте репозиторий с [https://github.com/webitproff/cot-pagereviews](https://github.com/webitproff/cot-pagereviews).
+2. **Копирование файлов**: Распакуйте и скопируйте папку `pagereviews` в директорию `plugins` вашей установки Cotonti.
+3. **Установка плагина**:
+   - Перейдите в **Панель администрирования** → **Расширения** → **Установить** → Выберите `Page Reviews`.
+   - Скрипт `setup/pagereviews.install.sql` создаст необходимые таблицы базы данных (`cot_pagereviews`, `cot_pagereviews_complaints`).
+4. **Проверка**: Откройте страницу статьи (`index.php?r=page&id=X`), чтобы убедиться, что форма и список отзывов отображаются.
+
+## Настройка
+
+Настройте плагин через **Панель администрирования** → **Расширения** → **Page Reviews** → **Конфигурация**:
+
+- **`pageall` (булево)**: Отображать все отзывы на странице статьи (1 = да, 0 = нет).
+- **`reviews_per_page` (целое число)**: Количество отзывов на странице в списке отзывов (по умолчанию: 10).
+- **`blacklistcattree` (строка)**: Список кодов категорий, разделенных запятыми, для исключения из отзывов (например, `system,unvalidated,info`).
+- **`metatitletext` (строка)**: Мета-заголовок для страницы списка отзывов (по умолчанию: `Все отзывы`).
+- **`metadescrtext` (строка)**: Мета-описание для страницы списка отзывов.
+
+Настройте права доступа в **Панель администрирования** → **Права доступа** → `plug/pagereviews`:
+- Гости: Чтение (`R`)
+- Зарегистрированные пользователи: Чтение, Запись (`RW`)
+- Администраторы: Чтение, Запись, Администрирование (`RWA`)
+
+## Интеграция в шаблоны
+
+Плагин предоставляет теги для бесшовной интеграции в шаблоны Cotonti. Ниже приведены примеры для распространенных шаблонов с использованием синтаксиса XTemplate и классов Bootstrap для стилизации.
+
+### page.tpl
+
+Отображает отзывы, статистику и форму добавления отзыва на странице статьи.
+
+```html
+<!-- IF {PHP|cot_plugin_active('pagereviews')} -->
+<div class="reviews-section">
+    <h2>{PHP.L.pagereviews_reviews}</h2>
+    
+    <!-- Статистика отзывов -->
+    <!-- IF {REVIEWS_TOTAL_COUNT} > 0 -->
+    <div class="reviews-stats">
+        <p>{PHP.L.pagereviews_pageCountReviewsTotalValue}: {REVIEWS_TOTAL_COUNT}</p>
+        <p>{PHP.L.pagereviews_pageAverageRatingValue}: {REVIEWS_AVG_STARS}</p>
+        <p>{PHP.L.pagereviews_pageCountStarsTotalValue}: {REVIEWS_STARS_SUMM}</p>
+    </div>
+    <!-- ELSE -->
+    <p>{PHP.L.pagereviews_no_reviews}</p>
+    <!-- ENDIF -->
+    
+    <!-- Список отзывов -->
+    <!-- IF {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
+    {PAGE_REVIEWS}
+    <!-- ENDIF -->
+    
+    <!-- Форма добавления отзыва -->
+    <!-- IF {PHP|cot_auth('plug', 'pagereviews', 'W')} AND {PHP.usr.id} > 0 -->
+    <div class="add-review-form">
+        <h3>{PHP.L.pagereviews_add_review}</h3>
+        {PAGE_REVIEWS_FORM}
+    </div>
+    <!-- ENDIF -->
+    
+    <!-- Ссылка на все отзывы -->
+    <a href="{PAGE_REVIEWS_URL}" class="btn btn-primary">{PHP.L.pagereviews_view_all}</a>
+    
+    <hr>
+</div>
+<!-- ENDIF -->
+```
+
+- **Теги**:
+  - `{REVIEWS_TOTAL_COUNT}`: Общее количество отзывов.
+  - `{REVIEWS_AVG_STARS}`: Средний рейтинг (звезды).
+  - `{REVIEWS_STARS_SUMM}`: Сумма звездных оценок.
+  - `{PAGE_REVIEWS}`: Список отзывов с пагинацией.
+  - `{PAGE_REVIEWS_FORM}`: Форма для добавления отзыва.
+  - `{PAGE_REVIEWS_URL}`: URL на полный список отзывов.
+
+### index.tpl
+
+Показывает последние отзывы на главной странице.
+
+```html
+<!-- IF {PHP|cot_plugin_active('pagereviews')} AND {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
+<div class="latest-reviews">
+    <h2>{PHP.L.pagereviews_last_index}</h2>
+    
+    <!-- Последние отзывы -->
+    {PHP|cot_pagereviews_last(5)}
+    
+    <!-- Ссылка на все отзывы -->
+    <a href="{PHP|cot_url('plug', 'e=pagereviews&m=list')}" class="btn btn-secondary">{PHP.L.pagereviews_view_all}</a>
+    
+    <hr>
+</div>
+<!-- ENDIF -->
+```
+
+- **Теги**:
+  - `{PHP|cot_pagereviews_last(5)}`: Отображает 5 последних отзывов.
+  - `{PHP|cot_url('plug', 'e=pagereviews&m=list')}`: URL на страницу списка отзывов.
+
+### page.list.tpl
+
+Добавляет количество отзывов и рейтинги в список статей.
+
+```html
+<!-- IF {PHP|cot_plugin_active('pagereviews')} -->
+<div class="page-list">
+    <!-- BEGIN: PAGES_ROW -->
+    <div class="page-item">
+        <h3><a href="{PAGES_ROW_URL}">{PAGES_ROW_TITLE}</a></h3>
+        <p>{PAGES_ROW_DESC}</p>
+        
+        <!-- Статистика отзывов -->
+        <!-- IF {PAGES_ROW_REVIEWS_COUNT} > 0 -->
+        <div class="page-reviews-stats">
+            <p>{PHP.L.pagereviews_pageCountReviewsTotalValue}: {PAGES_ROW_REVIEWS_COUNT}</p>
+            <p>{PHP.L.pagereviews_pageAverageRatingValue}: {PAGES_ROW_AVG_STARS}</p>
+            <a href="{PAGES_ROW_REVIEWS_URL}" class="btn btn-sm btn-info">{PHP.L.pagereviews_view_all}</a>
+        </div>
+        <!-- ELSE -->
+        <p>{PHP.L.pagereviews_no_reviews}</p>
+        <!-- ENDIF -->
+    </div>
+    <hr>
+    <!-- END: PAGES_ROW -->
+</div>
+<!-- ENDIF -->
+```
+
+- **Теги**:
+  - `{PAGES_ROW_REVIEWS_COUNT}`: Количество отзывов для статьи.
+  - `{PAGES_ROW_AVG_STARS}`: Средний рейтинг статьи.
+  - `{PAGES_ROW_REVIEWS_URL}`: URL на отзывы статьи.
+
+### users.details.tpl
+
+Отображает отзывы конкретного пользователя в его профиле.
+
+```html
+<!-- IF {PHP|cot_plugin_active('pagereviews')} -->
+<li class="nav-item">
+  <a class="nav-link<!-- IF {PHP.tab} == 'pagereviews' --> active<!-- ENDIF -->" href="{USERS_DETAILS_PAGEREVIEWS_URL}#tab_pagereviews" data-bs-toggle="tab" role="tab">{PHP.L.pagereviews_reviews} ({USERS_DETAILS_PAGEREVIEWS_COUNT})</a>
+</li>
+<!-- ENDIF -->
+```
+
+и
+
+```html
+<div class="reviews-content tab-pane fade<!-- IF {PHP.tab} == 'pagereviews' --> show active<!-- ENDIF -->" id="tab_pagereviews" role="tabpanel">
+    {PAGEREVIEWS}
+</div>
+```
+
+Например, [users.details.tpl](https://github.com/webitproff/cot-pagereviews/blob/main/users.details.tpl)
+
+### Дерево категорий в page.list.tpl
+
+Отображает дерево категорий с количеством отзывов.
+
+```html
+<!-- IF {PHP|cot_plugin_active('pagereviews')} AND {PHP|cot_auth('plug', 'pagereviews', 'R')} -->
+<div class="category-tree">
+    <h2>{PHP.L.pagereviews_categories}</h2>
+    
+    <!-- Дерево категорий -->
+    {PHP|cot_pagereviews_build_structure_tree('', {PHP.c})}
+    
+    <hr>
+</div>
+<!-- ENDIF -->
+```
+
+- **Теги**:
+  - `{PHP|cot_pagereviews_build_structure_tree('', {PHP.c})}`: Формирует дерево категорий с количеством отзывов.
+
+## Использование
+
+### Добавление отзыва
+- Перейдите на страницу статьи (`index.php?r=page&id=X`).
+- Авторизованные пользователи с правами записи (`W`) могут заполнить форму отзыва (`PAGE_REVIEWS_FORM`) с заголовком, текстом и оценкой от 1 до 5 звезд.
+- Администраторы могут дополнительно указать автора и дату отзыва.
+
+### Редактирование/удаление отзывов
+- Авторы и администраторы могут редактировать (`m=edit`) или удалять (`m=delete`) отзывы через ссылки в списке отзывов или при просмотре отдельного отзыва.
+
+### Подача жалоб
+- Пользователи могут подать жалобу (`m=claim`) на отзыв, указав причину.
+- Жалобы сохраняются в таблице `cot_pagereviews_complaints` и инициируют email-уведомления администраторам.
+
+### Управление жалобами
+- Администраторы получают доступ к списку жалоб (`m=claim`) для одобрения (удаление отзыва) или отклонения.
+- Уведомления отправляются при разрешении жалобы.
+
+### Просмотр отзывов
+- **Один отзыв**: Просмотр конкретного отзыва (`m=main`, `itemid=X`, `pageid=Y`).
+- **Список отзывов**: Доступ к полному списку отзывов (`m=list`) с фильтрами по поиску (`sq`), категории (`c`), пользователю (`user`) и сортировке (`sort`).
+
+## Технические детали
+
+### Структура директорий
+```
+/pagereviews/
+├── pagereviews.setup.php                 # Конфигурация и настройка плагина
+├── pagereviews.php                       # Точка входа, выбор режима
+├── pagereviews.pagetags.main.php         # Теги для статистики отзывов
+├── pagereviews.page.tags.php             # Теги для интеграции в page.tpl
+├── pagereviews.input.php                 # Обработка входных данных
+├── pagereviews.global.php                # Подключение языковых файлов
+├── pagereviews.ajax.php                  # Обработчик AJAX для автодополнения пользователей
+├── tpl/
+│   ├── pagereviews.claim.tpl             # Шаблон формы жалобы
+│   ├── pagereviews.edit.tpl              # Шаблон формы редактирования отзыва
+│   ├── pagereviews.last.tpl              # Шаблон последних отзывов
+│   ├── pagereviews.list.tpl              # Шаблон списка отзывов
+│   ├── pagereviews.main.tpl              # Шаблон одного отзыва
+│   ├── pagereviews.page.tpl              # Интеграция отзывов на страницу статьи
+│   └── pagereviews.tree.tpl              # Шаблон дерева категорий
+├── setup/
+│   ├── pagereviews.install.sql           # SQL для создания таблиц
+│   └── pagereviews.uninstall.sql         # SQL для удаления таблиц
+├── lang/
+│   ├── pagereviews.ru.lang.php           # Русская локализация
+│   └── pagereviews.en.lang.php           # Английская локализация
+└── inc/
+    ├── pagereviews.add.php               # Логика добавления отзыва
+    ├── pagereviews.claim.php             # Подача и управление жалобами
+    ├── pagereviews.delete.php            # Логика удаления отзыва
+    ├── pagereviews.edit.php              # Логика редактирования отзыва
+    ├── pagereviews.functions.php         # Основные функции (звезды, подсчет и т.д.)
+    ├── pagereviews.list.php              # Список отзывов с фильтрацией/сортировкой
+    └── pagereviews.main.php              # Отображение одного отзыва
+```
+
+### Схема базы данных
+- **cot_pagereviews**:
+  - `item_id` (INT, PK): ID отзыва
+  - `item_userid` (INT): ID автора отзыва
+  - `item_pageid` (INT): ID статьи
+  - `item_text` (TEXT): Текст отзыва
+  - `item_title` (VARCHAR): Заголовок отзыва
+  - `item_score` (INT): Оценка (1–5)
+  - `item_date` (INT): Дата отзыва (Unix timestamp)
+  - Индексы: `idx_userid`, `idx_pageid`
+- **cot_pagereviews_complaints**:
+  - `complaint_id` (INT, PK): ID жалобы
+  - `complaint_userid` (INT): ID автора жалобы
+  - `complaint_itemid` (INT): ID отзыва
+  - `complaint_text` (TEXT): Текст жалобы
+  - `complaint_date` (INT): Дата подачи
+  - `complaint_resolved_date` (INT): Дата разрешения
+  - `complaint_status` (ENUM): `pending`, `rejected`, `approved`
+  - Индексы: `idx_userid`, `idx_itemid`
+
+### Безопасность
+- **Права доступа**: Использует `cot_auth` для контроля доступа на чтение (`R`), запись (`W`) и администрирование (`A`).
+- **Валидация данных**: `cot_import` и `cot_check` обеспечивают безопасную обработку данных.
+- **Защита от спама**: `cot_shield_protect` предотвращает повторяющиеся действия.
+- **Ограничения**: Один отзыв на пользователя на статью и одна жалоба на пользователя на отзыв.
+
+### Интерфейс
+- **Стилизация**: Использует классы Bootstrap (`form-control`, `form-select`, `btn`) для форм и кнопок.
+- **Select2**: Улучшает выпадающие списки категорий и пользователей.
+- **Шаблоны**: Построены на XTemplate для гибкого рендеринга.
+
+### Уведомления
+- Email-уведомления отправляются администраторам (`user_maingrp = 5`) для:
+  - Новых отзывов
+  - Отредактированных отзывов
+  - Удаленных отзывов
+  - Новых жалоб
+  - Разрешения жалоб
+- Уведомления содержат детали (заголовок, текст, оценка, автор, статья, дата, URL).
+
+## Удаление
+
+1. В **Панели администрирования** перейдите в **Расширения** → **Отключить** → Выберите `Page Reviews`.
+2. Скрипт `setup/pagereviews.uninstall.sql` удалит таблицы `cot_pagereviews` и `cot_pagereviews_complaints`.
+3. Удалите папку `pagereviews` из директории `plugins`.
+
+## Ограничения и рекомендации
+
+### Ограничения
+- Требуется авторизация пользователя для подачи отзывов и жалоб.
+- Один отзыв на пользователя на статью.
+- Нет поддержки вложенных комментариев к отзывам.
+
+### Рекомендации
+- Настройте `blacklistcattree` для исключения системных категорий (например, `system,unvalidated`).
+- Включите Bootstrap и Select2 в вашу тему для оптимального пользовательского опыта.
+- Регулярно проверяйте жалобы через интерфейс администратора (`m=claim`).
+- Настройте CSS для соответствия блоков отзывов дизайну вашего сайта.
+
+## Поддержка
+
+- **Проблемы**: Сообщайте о багах или запрашивайте функции на [https://github.com/webitproff/cot-pagereviews/issues](https://github.com/webitproff/cot-pagereviews/issues).
+- **Помощь и поддержка**: Задавайте вопросы на [форуме](https://abuyfile.com/ru/forums/custom/plugs).
+- **Автор**: webitprof
+- **Лицензия**: BSD
+
+> **Внимание!** После завершения установки необходимо выполнить условия, указанные в пунктах №4 и №5 инструкции по установке плагина [treecatspage](https://github.com/webitproff/cot-treecatspage).
