@@ -75,7 +75,7 @@
                                         <div class="col-md-auto text-center text-md-end">
                                             <!-- IF {REVIEW_ROW_OWNER_FULL_NAME} -->
                                             <h4 class="h6 mt-2 mb-1 ms-2">
-                                                <a class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{REVIEW_ROW_DETAILS_URL}">{REVIEW_ROW_OWNER_FULL_NAME}</a>
+                                                <a class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{REVIEW_ROW_OWNER_DETAILS_URL}">{REVIEW_ROW_OWNER_FULL_NAME}</a>
                                             </h4>
                                             <!-- ENDIF -->
                                             <!-- IF {REVIEW_ROW_OWNER_NAME} -->
@@ -169,4 +169,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
 <!-- END: MAIN -->
