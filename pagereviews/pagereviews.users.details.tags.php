@@ -5,6 +5,8 @@
  * [END_COT_EXT]
  */
 
+// plugins/pagereviews/pagereviews.users.details.tags.php
+
 defined('COT_CODE') or die('Wrong URL');
 
 require_once cot_incfile('pagereviews', 'plug');
@@ -27,9 +29,9 @@ $t1 = new XTemplate(cot_tplfile(['pagereviews', 'userdetails'], 'plug'));
 $where = [];
 $order = [];
 
-// if ($usr['id'] == 0 || ($usr['id'] != $urr['user_id'] && !$usr['isadmin'])) {
-//    $where['state'] = "r.item_state=0";
-// }
+/* if ($usr['id'] == 0 || ($usr['id'] != $urr['user_id'] && !$usr['isadmin'])) {
+    $where['state'] = "r.item_state=0";
+} */
 
 if ($category) {
     $where['cat'] = 'p.page_cat=' . $db->quote($category);
@@ -202,5 +204,6 @@ $t1->parse("MAIN");
 $t->assign([
     "USERS_DETAILS_PAGEREVIEWS_COUNT" => $reviews_count_all,
     "USERS_DETAILS_PAGEREVIEWS_URL" => cot_url('users', 'm=details&id=' . $urr['user_id'] . '&u=' . $urr['user_name'] . '&tab=pagereviews'),
+    "PAGEREVIEWS_LIST_USER_URL" => cot_url('plug', ['e' => 'pagereviews', 'm' => 'list', 'user' => $urr['user_id']]),
     "PAGEREVIEWS" => $t1->text("MAIN")
 ]);
